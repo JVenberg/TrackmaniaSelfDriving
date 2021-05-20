@@ -3,40 +3,53 @@
 
 #category "Utility"
 
+
+Net::Socket@ sock;
+
 void Main()
-{
-    // Create a new socket.
-    auto sock = Net::Socket();
-
-    // Try to initiate a socket to ip.mrag.nl on port 80.
-    if (!sock.Connect("127.0.0.1", 65432)) {
-        // If it failed, there was some socket error. (This is not necessarily
-        // a connection error!)
-        print("Couldn't initiate socket connection.");
-        return;
-    }
-
-    print("Connecting to host...");
-
-    // Wait until we are connected. This is indicated by whether we can write
-    // to the socket.
-    while (!sock.CanWrite()) {
+{   
+    
+    int prevRaceTime = -1;
+    ConnectSocket();
+    while (true) {
+        CTrackMania@ app = cast<CTrackMania>(GetApp());
+        CSmArenaClient@ playground = cast<CSmArenaClient>(app.CurrentPlayground);
+        if (playground !is null) {
+            if (playground.GameTerminals.Length > 0) {
+                CGameTerminal@ terminal = cast<CGameTerminal>(playground.GameTerminals[0]);
+                CSmPlayer@ player = cast<CSmPlayer>(terminal.GUIPlayer);
+                if (player !is null) {
+                    CSmScriptPlayer@ scriptApi = cast<CSmScriptPlayer>(player.ScriptAPI);
+                    if (scriptApi !is null) {
+                        int raceTime = scriptApi.CurrentRaceTime;
+                        if (raceTime > prevRaceTime && raceTime > 0) {
+                            float speed = scriptApi.Speed * 3.6f;
+                            print('' + speed);
+                            if (!sock.Write(speed)) {
+                                ConnectSocket();
+                                sleep(50);
+                                continue;
+                            }
+                        }
+                        prevRaceTime = raceTime;
+                    } 
+                }
+                
+            }
+        }
+        
         yield();
-    }
-
-    print("Connected! Sending request...");
-
-    // Send raw data (as a string) to the server.
-    if (!sock.WriteRaw("Test\r\n")) {
-        // If this fails, the socket might not be open. Something is wrong!
-        print("Couldn't send data.");
-        return;
     }
 
     // We're all done!
     print("All done!");
-    // print("Response: \"" + response + "\"");
-
-    // Close the socket.
     sock.Close();
+}
+
+void ConnectSocket() {
+    if (sock !is null) {
+        sock.Close();
+    }
+    @sock = Net::Socket();
+    sock.Connect("127.0.0.1", 65432);
 }
