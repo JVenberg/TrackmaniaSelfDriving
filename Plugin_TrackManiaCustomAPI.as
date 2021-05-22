@@ -10,6 +10,7 @@ void Main()
 {   
     
     int prevRaceTime = -1;
+    bool paused = true;
     ConnectSocket();
     while (true) {
         CTrackMania@ app = cast<CTrackMania>(GetApp());
@@ -22,16 +23,34 @@ void Main()
                     CSmScriptPlayer@ scriptApi = cast<CSmScriptPlayer>(player.ScriptAPI);
                     if (scriptApi !is null) {
                         int raceTime = scriptApi.CurrentRaceTime;
+                        auto json = Json::Object();
+                        if (raceTime < 0) {
+                            prevRaceTime = raceTime;
+                        }
                         if (raceTime > prevRaceTime && raceTime > 0) {
-                            float speed = scriptApi.Speed * 3.6f;
-                            print('' + speed);
-                            if (!sock.Write(speed)) {
+                            if (paused) {
+                                sleep(500);
+                            }
+                            json['speed'] = Json::Value(scriptApi.Speed * 3.6f);
+                            if (!sock.WriteRaw(Json::Write(json) + '\n')) {
                                 ConnectSocket();
-                                sleep(50);
+                                yield();
                                 continue;
                             }
+                            print(Json::Write(json));
+                            prevRaceTime = raceTime;
+                            paused = false;
+                        } else if (!paused) {
+                            paused = true;
+                            json['speed'] = Json::Value();
+                            if (!sock.WriteRaw(Json::Write(json) + '\n')) {
+                                ConnectSocket();
+                                yield();
+                                continue;
+                            }
+                            print(Json::Write(json));
                         }
-                        prevRaceTime = raceTime;
+                        
                     } 
                 }
                 

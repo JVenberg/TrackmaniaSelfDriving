@@ -1,9 +1,9 @@
 import socket
-import struct
 import threading
 import time
 import inputs
 import d3dshot
+import json
 import numpy as np
 from inputs import devices
 from PIL import Image
@@ -49,10 +49,17 @@ class XboxController(object):
     def stop(self):
         self._monitor_controller.stop()
     def read(self): # return the buttons/triggers that you care about in this method
-        x = self.LeftJoystickX if abs(self.LeftJoystickX) >= XboxController.DEADZONE_CUTOFF else 0
+        steer = self.LeftJoystickX if abs(self.LeftJoystickX) >= XboxController.DEADZONE_CUTOFF else 0
         acc = self.RightTrigger
         br = self.LeftTrigger
-        return [x, acc - br]
+        pause = self.A
+        start_stop = self.X
+        return {
+            "steering": steer,
+            "acceleration": acc - br,
+            "pause": pause,
+            "start_stop": start_stop
+        }
 
 
     def _monitor_controller(self):
@@ -83,9 +90,9 @@ class XboxController(object):
                 elif event.code == 'BTN_SOUTH':
                     self.A = event.state
                 elif event.code == 'BTN_NORTH':
-                    self.X = event.state
-                elif event.code == 'BTN_WEST':
                     self.Y = event.state
+                elif event.code == 'BTN_WEST':
+                    self.X = event.state
                 elif event.code == 'BTN_EAST':
                     self.B = event.state
                 elif event.code == 'BTN_THUMBL':
@@ -106,15 +113,14 @@ class XboxController(object):
                     self.DownDPad = event.state
 
 
-
-
 if __name__ == '__main__':
     try:
         joy = XboxController()
         d = d3dshot.create()
         d.display = d.displays[1]
         width, height = d.display.resolution
-        d.capture(region=(0, 100, width, height - 460))
+        running = True
+        start_stop_down = False
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
             s.listen()
@@ -125,29 +131,29 @@ if __name__ == '__main__':
                     with conn:
                         conn.setblocking(False)
                         print('Connected by', addr)
+                        conn_file = conn.makefile('r')
                         while True:
-                            try:
-                                data = conn.recv(1024)
-                                if not data:
-                                    break
-                                data, = list(struct.iter_unpack('f', data))[-1]
-                                img = d.get_latest_frame().convert('L')
-                                img_width, img_height = img.size
-                                img.transform((400, 400), Image.QUAD, (800, 300, 0, img_height, img_width, img_height, img_width - 800, 300)) \
-                                    .save('data/' + str(time.time()) + '.tiff')
-                                print([data, *joy.read()])
-                            except BlockingIOError:
-                                pass
+                            lines = conn_file.readlines()
+                            last_line = lines[-1] if len(lines) > 0 else False
+                            controller_data = joy.read()
+                            
+                            if controller_data['start_stop'] and not start_stop_down:
+                                running = not running
+                                start_stop_down = True
+                            elif not controller_data['start_stop']:
+                                start_stop_down = False
+
+                            if last_line and running and not controller_data['pause']:
+                                json_data = json.loads(last_line)
+                                if json_data['speed'] is not None:
+                                    img = d.screenshot(region=(0, 400, width, height - 460)).convert('L')
+                                    img_width, img_height = img.size
+                                    img \
+                                        .transform((200, 200), Image.QUAD, (500, 0, 0, img_height, img_width, img_height, img_width - 500, 0)) \
+                                        .save(r'D:/Documents/TrackmaniaSelfDrivingData/' + str(time.time()) + '.png')
+                                    print([json_data['speed'], controller_data['steering'], controller_data['acceleration']])
                 except BlockingIOError:
                     pass
                 time.sleep(0.01)
     except KeyboardInterrupt:
-        if d:
-            d.stop()
         print('End')
-
-    # img =  Image.open('data/1621503262.7339501.tiff')
-    # width, height = img.size
-    # print(width, height)
-    # img.show()
-    # img.transform((400, 400), Image.QUAD, (800, 300, 0, height, width, height, width - 800, 300)).show()
