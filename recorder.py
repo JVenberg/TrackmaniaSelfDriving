@@ -1,11 +1,14 @@
 import socket
 import threading
 import time
+import os
 import inputs
 import d3dshot
 import json
+import csv
 import numpy as np
 from inputs import devices
+from collections import deque
 from PIL import Image
 
 HOST = '127.0.0.1'
@@ -54,11 +57,13 @@ class XboxController(object):
         br = self.LeftTrigger
         pause = self.A
         start_stop = self.X
+        revert = self.LeftBumper
         return {
             "steering": steer,
             "acceleration": acc - br,
             "pause": pause,
-            "start_stop": start_stop
+            "start_stop": start_stop,
+            "revert": revert
         }
 
 
@@ -113,14 +118,68 @@ class XboxController(object):
                     self.DownDPad = event.state
 
 
+class SaveBuffer():
+    def __init__(self, buffer_size, save_dir, img_type='png', data_file_name='telemetry.csv'):
+        self.buffer_size = buffer_size
+        self.buffer = deque
+        self.save_dir = save_dir
+        self.img_type = img_type
+
+        data_file_exists = os.path.isfile(save_dir + data_file_name)
+        self.data_file = open(data_file_name, 'a')
+        self.data_file_writer = csv.DictWriter(self.data_file, fieldnames=[
+            'img_file',
+            'time',
+            'speed',
+            'steering',
+            'acceleration'
+        ])
+        if not data_file_exists:
+            self.data_file_writer.writeheader()
+
+    def _save(self, data):
+        img, time, speed, steering, acceleration = data
+        img_file_name = self.save_dir + str(time) + '.' + self.img_type
+        img.save(img_file_name)
+        self.data_file_writer.writerow({
+            'img_file': img_file_name,
+            'time': time,
+            'speed': speed,
+            'steering': steering,
+            'acceleration': acceleration
+        })
+
+    def add(self, img, time, speed, steering, acceleration):
+        while len(self.buffer) > self.buffer_size:
+            self._save(self.buffer.pop())
+        self.buffer.appendleft((img, time, speed, steering, acceleration))
+
+    def flush(self):
+        while len(self.buffer) > 0:
+            self._save(self.buffer.pop())
+
+    def clear(self):
+        self.buffer.clear()
+
+    def close(self):
+        self.flush()
+        self.data_file.close()
+
+
 if __name__ == '__main__':
     try:
         joy = XboxController()
         d = d3dshot.create()
         d.display = d.displays[1]
         width, height = d.display.resolution
+
         running = True
+
         start_stop_down = False
+        revert_down = False
+
+        save_buffer = SaveBuffer(10, r'D:/Documents/TrackmaniaSelfDrivingData/', 'png')
+
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
             s.listen()
@@ -133,27 +192,37 @@ if __name__ == '__main__':
                         print('Connected by', addr)
                         conn_file = conn.makefile('r')
                         while True:
-                            lines = conn_file.readlines()
-                            last_line = lines[-1] if len(lines) > 0 else False
                             controller_data = joy.read()
-                            
+
                             if controller_data['start_stop'] and not start_stop_down:
                                 running = not running
                                 start_stop_down = True
                             elif not controller_data['start_stop']:
                                 start_stop_down = False
 
+                            if controller_data['revert'] and not revert_down:
+                                save_buffer.clear()
+                                revert_down = True
+                            elif not controller_data['revert']:
+                                revert_down = False
+
+                            lines = conn_file.readlines()
+                            last_line = lines[-1] if len(lines) > 0 else False
                             if last_line and running and not controller_data['pause']:
                                 json_data = json.loads(last_line)
                                 if json_data['speed'] is not None:
                                     img = d.screenshot(region=(0, 400, width, height - 460)).convert('L')
                                     img_width, img_height = img.size
-                                    img \
-                                        .transform((200, 200), Image.QUAD, (500, 0, 0, img_height, img_width, img_height, img_width - 500, 0)) \
-                                        .save(r'D:/Documents/TrackmaniaSelfDrivingData/' + str(time.time()) + '.png')
-                                    print([json_data['speed'], controller_data['steering'], controller_data['acceleration']])
+                                    save_buffer.add(
+                                        img.transform((200, 200), Image.QUAD, (500, 0, 0, img_height, img_width, img_height, img_width - 500, 0),
+                                        json_data['speed'],
+                                        controller_data['steering'],
+                                        controller_data['acceleration'])
+                                else:
+                                    save_buffer.clear()
                 except BlockingIOError:
                     pass
                 time.sleep(0.01)
     except KeyboardInterrupt:
+        save_buffer.close()
         print('End')
