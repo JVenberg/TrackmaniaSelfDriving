@@ -12,18 +12,15 @@ Net::Socket@ sock;
 void Main()
 {
 
-    int prevRaceTime = -1;
     bool paused = true;
     ConnectSocket();
     while (true) {
-        CSmScriptPlayer@ scriptApi = GetScriptAPI();
+        CSmScriptPlayer@ scriptApi = GetPlayerScriptAPI();
+        CGameManiaPlanetScriptAPI@ maniaApi = GetManiaScriptAPI();
         if (scriptApi !is null) {
             int raceTime = scriptApi.CurrentRaceTime;
             auto json = Json::Object();
-            if (raceTime < 0) {
-                prevRaceTime = raceTime;
-            }
-            if (raceTime > prevRaceTime && raceTime > 0) {
+            if (raceTime > 0 && !maniaApi.ActiveContext_InGameMenuDisplayed) {
                 if (paused) {
                     sleep(500);
                 }
@@ -34,7 +31,7 @@ void Main()
                     continue;
                 }
                 print(Json::Write(json));
-                prevRaceTime = raceTime;
+                // prevRaceTime = raceTime;
                 paused = false;
             } else if (!paused) {
                 paused = true;
@@ -57,7 +54,12 @@ void Main()
     sock.Close();
 }
 
-CSmScriptPlayer@ GetScriptAPI() {
+CGameManiaPlanetScriptAPI@ GetManiaScriptAPI() {
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    return app.ManiaPlanetScriptAPI;
+}
+
+CSmScriptPlayer@ GetPlayerScriptAPI() {
     CTrackMania@ app = cast<CTrackMania>(GetApp());
     CSmArenaClient@ playground = cast<CSmArenaClient>(app.CurrentPlayground);
     if (playground !is null) {

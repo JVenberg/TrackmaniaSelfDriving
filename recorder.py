@@ -14,6 +14,7 @@ from PIL import Image
 HOST = '127.0.0.1'
 PORT = 65432
 MAX_FPS = 10
+SAVE_BUFFER_SECONDS = 8
 
 class XboxController(object):
     MAX_TRIG_VAL = 256
@@ -58,12 +59,14 @@ class XboxController(object):
         pause = self.A
         start_stop = self.X
         revert = self.LeftBumper
+        save = self.RightBumper
         return {
             "steering": steer,
             "acceleration": acc - br,
             "pause": pause,
             "start_stop": start_stop,
-            "revert": revert
+            "revert": revert,
+            "save": save
         }
 
 
@@ -158,6 +161,7 @@ class SaveBuffer():
     def flush(self):
         while len(self.buffer) > 0:
             self._save(self.buffer.pop())
+        print('Saved')
 
     def clear(self):
         last_time = time.time() - self.buffer.pop()[1] if len(self.buffer) > 0 else 0
@@ -167,7 +171,7 @@ class SaveBuffer():
     def close(self):
         self.flush()
         self.data_file.close()
-
+            
 
 if __name__ == '__main__':
     try:
@@ -180,10 +184,11 @@ if __name__ == '__main__':
 
         start_stop_down = False
         revert_down = False
+        save_down = False
 
         last_frame_time = time.time()
 
-        save_buffer = SaveBuffer(80, r'D:/Documents/TrackmaniaSelfDrivingData/', 'png')
+        save_buffer = SaveBuffer(SAVE_BUFFER_SECONDS * MAX_FPS, r'D:/Documents/TrackmaniaSelfDrivingData/', 'png')
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
@@ -211,6 +216,13 @@ if __name__ == '__main__':
                             elif not controller_data['revert']:
                                 revert_down = False
 
+                            
+                            if controller_data['save'] and not save_down:
+                                save_buffer.flush()
+                                save_down = True
+                            elif not controller_data['save']:
+                                save_down = False
+
                             lines = conn_file.readlines()
                             last_line = lines[-1] if len(lines) > 0 else False
                             curr_frame_time = time.time()
@@ -218,11 +230,13 @@ if __name__ == '__main__':
                                 json_data = json.loads(last_line)
                                 if json_data['speed'] is not None:
                                     if curr_frame_time - last_frame_time >= 1 / MAX_FPS:
-                                        img = d.screenshot(region=(0, 400, width, height - 460)).convert('L')
+                                        img = d.screenshot(region=(0, 400, width, height)).convert('L')
                                         img_width, img_height = img.size
                                         last_frame_time = curr_frame_time
+                                        img = img.resize((128, 128))
+                                        # img = img.transform((128, 128), Image.QUAD, (500, 0, 0, img_height, img_width, img_height, img_width - 500, 0))
                                         save_buffer.add(
-                                            img.transform((128, 128), Image.QUAD, (500, 0, 0, img_height, img_width, img_height, img_width - 500, 0)),
+                                            img,
                                             curr_frame_time,
                                             json_data['speed'],
                                             controller_data['steering'],
