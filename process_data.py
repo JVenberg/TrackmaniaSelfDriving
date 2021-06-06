@@ -5,7 +5,7 @@ import random
 from PIL import Image, ImageOps
 
 
-IN_DIR = "raw_data"
+IN_DIR = "D:\Documents\TrackmaniaSelfDrivingData"
 OUT_DIR = "data"
 
 IN_DATA_FILE = "telemetry.csv"
@@ -21,7 +21,8 @@ def write_data_row(writer, img, file_name, speed, steering):
     img.save(os.path.join(OUT_DIR, file_name))
 
 def convert_raw_to_output():
-    shutil.rmtree(OUT_DIR)
+    if os.path.isdir(OUT_DIR):
+        shutil.rmtree(OUT_DIR)
     os.mkdir(OUT_DIR)
     with open(os.path.join(IN_DIR, IN_DATA_FILE), newline="") as csv_in_file, open(
         os.path.join(OUT_DIR, OUT_DATA_FILE), "w", newline=""
