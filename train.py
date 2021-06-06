@@ -1,47 +1,14 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision.io import read_image
+from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torch import nn
-import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 
-from PIL import Image
+from model import TrackmaniaNet
+from dataset import TrackManiaDataset
 
 import matplotlib.pyplot as plt
-import csv
-import os
-
-
-class TrackManiaDataset(Dataset):
-    def __init__(
-        self, data_dir, annotations_file_name, transform=None, target_transform=None
-    ):
-        self.anno_file = open(os.path.join(data_dir, annotations_file_name))
-        self.img_labels = list(csv.DictReader(self.anno_file))
-        self.data_dir = data_dir
-        self.transform = transform
-        self.target_transform = target_transform
-
-    def __len__(self):
-        return len(self.img_labels)
-
-    def __getitem__(self, idx):
-        row = self.img_labels[idx]
-        img_path = os.path.join(self.data_dir, row["img_file"])
-        image = read_image(img_path)
-        speed = float(row["speed"])
-        steering = float(row["steering"])
-        if self.transform:
-            image = self.transform(image)
-        if self.target_transform:
-            speed = self.target_transform(speed)
-            steering = self.target_transform(steering)
-        return image, torch.from_numpy(np.array([speed, steering])).float()
-
-    def __del__(self):
-        self.anno_file.close()
 
 
 def view_data(data):
@@ -89,34 +56,6 @@ def load_data():
     return train_dataloader, test_dataloader
 
 
-class ConvNet(nn.Module):
-    def __init__(self):
-        super(
-            ConvNet, self
-        ).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 3, stride=2, padding=1)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.conv2 = nn.Conv2d(16, 32, 3, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.conv3 = nn.Conv2d(32, 64, 3, stride=2, padding=1)
-        self.bn3 = nn.BatchNorm2d(64)
-        self.fc1 = nn.Linear(1024, 2)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = F.relu(x)
-        x = self.conv2(x)
-        x = self.bn2(x)
-        x = F.relu(x)
-        x = self.conv3(x)
-        x = self.bn3(x)
-        x = F.relu(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        return x
-
-
 def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=1):
     net.to(device)
     losses = []
@@ -144,9 +83,9 @@ def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=1
             sum_loss += loss.item()
             if i % 100 == 99:  # print every 100 mini-batches
                 if verbose:
-                    print("[%d, %5d] loss: %.3f" % (epoch + 1, i + 1, sum_loss / 100))
+                    print("[%d, %5d] loss: %.6f" % (epoch + 1, i + 1, sum_loss / 100))
                 sum_loss = 0.0
-        return losses
+    return losses
 
 
 def accuracy(net, dataloader):
@@ -169,11 +108,12 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 train_dataloader, test_dataloader = load_data()
 
-conv_net = ConvNet()
-conv_losses = train(conv_net, train_dataloader, epochs=15, lr=.001)
+trackmania_net = TrackmaniaNet()
+conv_losses = train(trackmania_net, train_dataloader, epochs=15, lr=.001)
+torch.save(trackmania_net.state_dict(), 'model.pth')
 plt.plot(smooth(conv_losses, 50))
 
-print("Training accuracy: %f" % accuracy(conv_net, train_dataloader))
-print("Testing  accuracy: %f" % accuracy(conv_net, test_dataloader))
+print("Training accuracy: %f" % accuracy(trackmania_net, train_dataloader))
+print("Testing  accuracy: %f" % accuracy(trackmania_net, test_dataloader))
 
 plt.show()
