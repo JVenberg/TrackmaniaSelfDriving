@@ -150,17 +150,16 @@ def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=1
 
 
 def accuracy(net, dataloader):
-    correct = 0
+    loss_sum = 0
     total = 0
+    criterion = nn.MSELoss()
     with torch.no_grad():
         for batch in dataloader:
             images, labels = batch[0].to(device), batch[1].to(device)
             outputs = net(images)
-            _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-    return correct / total
-
+            loss_sum += torch.sqrt(criterion(outputs, labels))
+    return loss_sum / total
 
 def smooth(x, size):
     return np.convolve(x, np.ones(size) / size, mode="valid")
@@ -176,3 +175,5 @@ plt.plot(smooth(conv_losses, 50))
 
 print("Training accuracy: %f" % accuracy(conv_net, train_dataloader))
 print("Testing  accuracy: %f" % accuracy(conv_net, test_dataloader))
+
+plt.show()
