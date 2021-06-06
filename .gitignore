@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Custom
+
 data
 raw_data
+.vscode
