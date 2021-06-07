@@ -3,17 +3,28 @@ from torch import nn
 import torch.nn.functional as F
 
 class TrackmaniaNet(nn.Module):
-    def __init__(self):
+    def __init__(self, keep_prob=0.8):
         super(
             TrackmaniaNet, self
         ).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 3, stride=2, padding=1)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.conv2 = nn.Conv2d(16, 32, 3, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.conv3 = nn.Conv2d(32, 64, 3, stride=2, padding=1)
-        self.bn3 = nn.BatchNorm2d(64)
-        self.fc1 = nn.Linear(1024, 2)
+        self.drop_out = 1 - keep_prob
+        self.conv1 = nn.Conv2d(1, 24, 5, stride=2, padding=1)
+        self.bn1 = nn.BatchNorm2d(24)
+        self.conv2 = nn.Conv2d(24, 36, 5, stride=2, padding=1)
+        self.bn2 = nn.BatchNorm2d(36)
+        self.conv3 = nn.Conv2d(36, 48, 5, stride=2, padding=1)
+        self.bn3 = nn.BatchNorm2d(48)
+        self.conv4 = nn.Conv2d(48, 64, 3, padding=1)
+        self.bn4 = nn.BatchNorm2d(64)
+        self.conv5 = nn.Conv2d(64, 64, 3, padding=1)
+        self.bn5 = nn.BatchNorm2d(64)
+
+        self.flat = nn.Flatten(1)
+        self.fc1 = nn.Linear(576, 1164)
+        self.fc2 = nn.Linear(1164, 100)
+        self.fc3 = nn.Linear(100, 50)
+        self.fc4 = nn.Linear(50, 10)
+        self.fc5 = nn.Linear(10, 2)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -25,6 +36,26 @@ class TrackmaniaNet(nn.Module):
         x = self.conv3(x)
         x = self.bn3(x)
         x = F.relu(x)
-        x = torch.flatten(x, 1)
+        x = self.conv4(x)
+        x = self.bn4(x)
+        x = F.relu(x)
+        x = self.conv5(x)
+        x = self.bn5(x)
+        x = F.relu(x)
+
+        x = self.flat(x)
         x = self.fc1(x)
+        x = F.relu(x)
+        x = F.dropout(x, self.drop_out)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = F.dropout(x, self.drop_out)
+        x = self.fc3(x)
+        x = F.relu(x)
+        x = F.dropout(x, self.drop_out)
+        x = self.fc4(x)
+        x = F.relu(x)
+        x = F.dropout(x, self.drop_out)
+        x = self.fc5(x)
+        x = torch.atan(x)
         return x
