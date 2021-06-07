@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     trackmania_net = TrackmaniaNet()
     conv_losses = train(trackmania_net, train_dataloader, epochs=15, lr=0.01)
-    torch.save(trackmania_net.state_dict(), 'models/model_test.pth')
+    torch.save(trackmania_net.state_dict(), 'models/model.pth')
     plt.plot(smooth(conv_losses, 50))
 
     print("Training MSE loss: %f" % accuracy(trackmania_net, train_dataloader))
