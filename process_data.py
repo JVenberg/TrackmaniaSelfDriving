@@ -14,6 +14,7 @@ OUT_TRAIN_FILE = "train.csv"
 OUT_TEST_FILE = "test.csv"
 
 TRAIN_TEST_SPLIT = 0.8
+RESIZE = (32, 32)
 
 
 def write_data_row(writer, img, file_name, speed, steering):
@@ -35,6 +36,8 @@ def convert_raw_to_output():
         rows = list(reader)
         for i, row in enumerate(rows):
             img = Image.open(os.path.join(IN_DIR, row["img_file"]))
+            if RESIZE:
+                img = img.resize(RESIZE)
 
             write_data_row(writer, img, row["img_file"], row["speed"], row["steering"])
             write_data_row(
