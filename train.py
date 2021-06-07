@@ -39,24 +39,23 @@ def view_dataloader(dataloader):
 def load_data():
     training_data = TrackManiaDataset("data", "train.csv", transform=transforms.Compose([
         transforms.ConvertImageDtype(torch.float),
-        transforms.Resize((32, 32))
+        # transforms.Resize((32, 32))
     ]))
     test_data = TrackManiaDataset("data", "test.csv", transform=transforms.Compose([
         transforms.ConvertImageDtype(torch.float),
-        transforms.Resize((32, 32))
-
+        # transforms.Resize((32, 32))
     ]))
 
     # view_data(training_data)
 
-    train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
-    test_dataloader = DataLoader(test_data, batch_size=64, shuffle=True)
+    train_dataloader = DataLoader(training_data, batch_size=32, shuffle=True, num_workers=4, pin_memory=True)
+    test_dataloader = DataLoader(test_data, batch_size=32, shuffle=True, num_workers=4, pin_memory=True)
 
     # view_dataloader(train_dataloader)
     return train_dataloader, test_dataloader
 
 
-def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=1):
+def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=True):
     net.to(device)
     losses = []
     criterion = nn.MSELoss()
@@ -90,30 +89,31 @@ def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=1
 
 def accuracy(net, dataloader):
     loss_sum = 0
-    total = 0
+    size = len(dataloader.dataset)
     criterion = nn.MSELoss()
     with torch.no_grad():
         for batch in dataloader:
             images, labels = batch[0].to(device), batch[1].to(device)
             outputs = net(images)
-            total += labels.size(0)
-            loss_sum += torch.sqrt(criterion(outputs, labels))
-    return loss_sum / total
+            loss_sum += criterion(outputs, labels).item()
+    return loss_sum / size
 
 def smooth(x, size):
     return np.convolve(x, np.ones(size) / size, mode="valid")
 
+if __name__ == '__main__':
+    torch.multiprocessing.freeze_support()
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print("Using {} device".format(device))
+    train_dataloader, test_dataloader = load_data()
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print("Using {} device".format(device))
-train_dataloader, test_dataloader = load_data()
+    trackmania_net = TrackmaniaNet()
+    conv_losses = train(trackmania_net, train_dataloader, epochs=15, lr=0.01)
+    torch.save(trackmania_net.state_dict(), 'models/model_test.pth')
+    plt.plot(smooth(conv_losses, 50))
 
-trackmania_net = TrackmaniaNet()
-conv_losses = train(trackmania_net, train_dataloader, epochs=15, lr=.001)
-torch.save(trackmania_net.state_dict(), 'model.pth')
-plt.plot(smooth(conv_losses, 50))
+    print("Training MSE loss: %f" % accuracy(trackmania_net, train_dataloader))
+    print("Testing MSE loss: %f" % accuracy(trackmania_net, test_dataloader))
 
-print("Training accuracy: %f" % accuracy(trackmania_net, train_dataloader))
-print("Testing  accuracy: %f" % accuracy(trackmania_net, test_dataloader))
-
-plt.show()
+    plt.show()
+    
