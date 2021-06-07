@@ -6,7 +6,7 @@ from model import TrackmaniaNet
 
 import d3dshot
 import matplotlib.pyplot as plt
-import gamepyd
+import vgamepad as vg
 
 from dataset import TrackManiaDataset
 from torch.utils.data import DataLoader
@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 import socket
 import time
 import json
+import random
 
 RESIZE = (32, 32)
 SPEED_SCALE = 200
@@ -71,7 +72,7 @@ if __name__ == '__main__':
 
     features, labels = next(iter(test_dataloader))
 
-    pad = gamepyd.wPad()
+    gamepad = vg.VX360Gamepad()
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
@@ -101,11 +102,7 @@ if __name__ == '__main__':
 
                             # print(f"Speed: {pred_speed} Steering: {pred_steering}")
                             
-                            controls = {
-                                'Lx': float(pred_steering),
-                                # 'LT': 0,
-                                # 'RT': 0
-                            }
+                            gamepad.left_joystick_float(float(pred_steering), y_value_float=0.0)
 
                             lines = conn_file.readlines()
                             last_line = lines[-1] if len(lines) > 0 else False
@@ -113,15 +110,16 @@ if __name__ == '__main__':
                                 json_data = json.loads(last_line)
                                 if json_data['speed']:
                                     delta = pred_speed - json_data['speed']
+                                    print(delta)
                                     if delta > 0:
-                                        controls['LT'] = 0
-                                        controls['RT'] = 0.9
+                                        gamepad.left_trigger_float(value_float=random.uniform(-0.0001, 0.0001))
+                                        gamepad.right_trigger_float(value_float=random.uniform(0.89999, 0.90001))
                                     elif delta < -30:
-                                        controls['LT'] = 0
-                                        controls['RT'] = 0
-                            pad.playMoment(controls, check=False)
+                                        gamepad.left_trigger_float(value_float=random.uniform(-0.0001, 0.0001))
+                                        gamepad.right_trigger_float(value_float=random.uniform(-0.0001, 0.0001))
+                            gamepad.update()
                 except BlockingIOError:
                     pass
                 time.sleep(0.01)
     except KeyboardInterrupt:
-        pad.UnPlug()
+        print('Done')
