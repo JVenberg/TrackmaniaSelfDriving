@@ -5,7 +5,6 @@ import torchvision.transforms as transforms
 from model import TrackmaniaNet
 
 import d3dshot
-import matplotlib.pyplot as plt
 import vgamepad as vg
 
 from dataset import TrackManiaDataset
@@ -16,49 +15,18 @@ import time
 import json
 import random
 
-RESIZE = (32, 32)
-SPEED_SCALE = 200
+RESIZE = (64, 64)
+SPEED_SCALE = 300
 HOST = '127.0.0.1'
 PORT = 65432
 
-# def view_data(data):
-#     figure = plt.figure(figsize=(8, 8))
-#     cols, rows = 3, 3
-#     for i in range(1, cols * rows + 1):
-#         sample_idx = torch.randint(len(data), size=(1,)).item()
-#         img, (speed, steering) = data[sample_idx]
-#         figure.add_subplot(rows, cols, i)
-#         plt.title("Speed: " + str(speed) + "\nSteering: " + str(steering))
-#         plt.axis("off")
-#         plt.imshow(img.squeeze(), cmap="gray")
-#     plt.show()
-
-
-def load_data():
-    training_data = TrackManiaDataset("data", "train.csv", transform=transforms.Compose([
-        transforms.ConvertImageDtype(torch.float),
-        transforms.Resize((32, 32))
-    ]))
-    test_data = TrackManiaDataset("data", "test.csv", transform=transforms.Compose([
-        transforms.ConvertImageDtype(torch.float),
-        transforms.Resize((32, 32))
-
-    ]))
-
-    # view_data(training_data)
-
-    train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True, pin_memory=True)
-    test_dataloader = DataLoader(test_data, batch_size=64, shuffle=True, pin_memory=True)
-
-    # view_dataloader(train_dataloader)
-    return train_dataloader, test_dataloader
 
 if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using {} device".format(device))
 
-    trackmania_net = TrackmaniaNet()
-    trackmania_net.load_state_dict(torch.load('models/model_nvidia_atan.pth'))
+    trackmania_net = TrackmaniaNet(drop_out=0.2)
+    trackmania_net.load_state_dict(torch.load('models/model_large.pth'))
     trackmania_net.eval()
     trackmania_net.to(device)
 
@@ -67,10 +35,6 @@ if __name__ == '__main__':
     width, height = d.display.resolution
 
     to_tensor = transforms.ToTensor()
-
-    train_dataloader, test_dataloader = load_data()
-
-    features, labels = next(iter(test_dataloader))
 
     gamepad = vg.VX360Gamepad()
     try:
@@ -85,6 +49,7 @@ if __name__ == '__main__':
                         conn.setblocking(False)
                         print('Connected by', addr)
                         conn_file = conn.makefile('r')
+                        smoothed_steering = 0
                         while True:
                             img = d.screenshot(region=(0, 400, width, height)).convert('L')
                             img_width, img_height = img.size
@@ -100,7 +65,8 @@ if __name__ == '__main__':
                             pred_speed = pred[0][0] * SPEED_SCALE
                             pred_steering = pred[0][1]
 
-                            # print(f"Speed: {pred_speed} Steering: {pred_steering}")
+                            smoothed_steering += 0.2 * pow(abs((pred_steering - smoothed_steering)), 2.0 / 3.0) * (pred_steering - smoothed_steering) / abs(pred_steering - smoothed_steering)
+                            print(f"Speed: {pred_speed} Steering: {smoothed_steering}")
                             
                             gamepad.left_joystick_float(float(pred_steering), y_value_float=0.0)
 
@@ -110,7 +76,7 @@ if __name__ == '__main__':
                                 json_data = json.loads(last_line)
                                 if json_data['speed']:
                                     delta = pred_speed - json_data['speed']
-                                    print(delta)
+                                    # print(delta)
                                     if delta > 0:
                                         gamepad.left_trigger_float(value_float=random.uniform(-0.0001, 0.0001))
                                         gamepad.right_trigger_float(value_float=random.uniform(0.89999, 0.90001))

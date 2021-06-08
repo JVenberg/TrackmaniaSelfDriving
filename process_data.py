@@ -13,8 +13,8 @@ OUT_DATA_FILE = "labels.csv"
 OUT_TRAIN_FILE = "train.csv"
 OUT_TEST_FILE = "test.csv"
 
-TRAIN_TEST_SPLIT = 0.8
-RESIZE = (32, 32)
+TRAIN_TEST_SPLIT = 0.85
+RESIZE = (64, 64)
 
 
 def write_data_row(writer, img, file_name, speed, steering):
