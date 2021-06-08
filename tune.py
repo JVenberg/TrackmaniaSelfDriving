@@ -55,7 +55,7 @@ def accuracy_and_loss(net, dataloader, percent_err_thresh=0.1):
             correct += torch.sum(torch.ge(torch.sum(torch.le(per_err, percent_err_thresh).long(), 1), 2).long())
     return correct / size, correct_speed / size, correct_steer / size,  loss_sum / size
 
-# @ray.remote(num_gpus=0.5)
+# Created with help from: https://pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html
 def train(config, checkpoint_dir=None, data_dir=None, epoch=10):
     trackmania_net = TrackmaniaNet(config['drop'])
 
@@ -149,7 +149,7 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
         num_samples=num_samples,
         scheduler=scheduler,
         progress_reporter=reporter,
-        max_failures=3)
+        max_failures=5)
 
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))

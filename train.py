@@ -10,12 +10,17 @@ from dataset import TrackManiaDataset
 
 import matplotlib.pyplot as plt
 
-LEARNING_RATE = 0.048749
-DECAY = 0.00013067
-BATCH_SIZE = 64
-DROP_OUT = 0.175
+# LEARNING_RATE = 0.048749
+# DECAY = 0.00013067
+# BATCH_SIZE = 64
+# DROP_OUT = 0.175
 
-def load_data(batch_size=32):
+LEARNING_RATE = 0.025557158229886558
+DECAY = 0.0004193392285214784
+BATCH_SIZE = 64
+DROP_OUT = 0.15
+
+def load_data(batch_size=64):
     training_data = TrackManiaDataset("data", "train.csv", transform=transforms.Compose([
         transforms.ConvertImageDtype(torch.float)
     ]))
@@ -39,22 +44,18 @@ def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=T
     for epoch in range(epochs):
         sum_loss = 0.0
         for i, batch in enumerate(dataloader, 0):
-            # get the inputs; data is a list of [inputs, labels]
             inputs, labels = batch[0].to(device), batch[1].to(device)
 
-            # zero the parameter gradients
             optimizer.zero_grad()
 
-            # forward + backward + optimize
             outputs = net(inputs)
             loss = criterion(outputs, labels)
-            loss.backward()  # autograd magic, computes all the partial derivatives
-            optimizer.step()  # takes a step in gradient direction
+            loss.backward()
+            optimizer.step()
 
-            # print statistics
             losses.append(loss.item())
             sum_loss += loss.item()
-            if i % 100 == 99:  # print every 100 mini-batches
+            if i % 100 == 99:
                 if verbose:
                     print("[%d, %5d] loss: %.6f" % (epoch + 1, i + 1, sum_loss / 100))
                 sum_loss = 0.0
