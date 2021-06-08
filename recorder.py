@@ -16,6 +16,7 @@ PORT = 65432
 MAX_FPS = 10
 SAVE_BUFFER_SECONDS = 8
 
+# Inputs XboxController wrapper taken from: https://github.com/kevinhughes27/TensorKart/blob/master/utils.py
 class XboxController(object):
     MAX_TRIG_VAL = 256
     MAX_JOY_VAL = 32768
@@ -52,6 +53,7 @@ class XboxController(object):
 
     def stop(self):
         self._monitor_controller.stop()
+
     def read(self): # return the buttons/triggers that you care about in this method
         steer = self.LeftJoystickX if abs(self.LeftJoystickX) >= XboxController.DEADZONE_CUTOFF else 0
         acc = self.RightTrigger
@@ -68,7 +70,6 @@ class XboxController(object):
             "revert": revert,
             "save": save
         }
-
 
     def _monitor_controller(self):
         while True:
@@ -151,12 +152,13 @@ class SaveBuffer():
             'steering': steering,
             'acceleration': acceleration
         })
-        print('Saved:', img_file_name)
+        # print('Saved:', img_file_name)
 
     def add(self, img, time, speed, steering, acceleration):
         while len(self.buffer) > self.buffer_size:
             self._save(self.buffer.pop())
         self.buffer.appendleft((img, time, speed, steering, acceleration))
+        print('Cached:', time)
 
     def flush(self):
         while len(self.buffer) > 0:
@@ -180,7 +182,7 @@ if __name__ == '__main__':
         d.display = d.displays[1]
         width, height = d.display.resolution
 
-        running = True
+        running = False
 
         start_stop_down = False
         revert_down = False
@@ -206,6 +208,7 @@ if __name__ == '__main__':
 
                             if controller_data['start_stop'] and not start_stop_down:
                                 running = not running
+                                print('Started' if running else 'Stopped')
                                 start_stop_down = True
                             elif not controller_data['start_stop']:
                                 start_stop_down = False

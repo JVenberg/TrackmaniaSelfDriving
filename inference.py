@@ -26,7 +26,7 @@ if __name__ == '__main__':
     print("Using {} device".format(device))
 
     trackmania_net = TrackmaniaNet(drop_out=0.2)
-    trackmania_net.load_state_dict(torch.load('models/model_large.pth'))
+    trackmania_net.load_state_dict(torch.load('models/model_large_tune.pth'))
     trackmania_net.eval()
     trackmania_net.to(device)
 
@@ -65,7 +65,9 @@ if __name__ == '__main__':
                             pred_speed = pred[0][0] * SPEED_SCALE
                             pred_steering = pred[0][1]
 
+                            # Driving angle smoothing taken from: https://github.com/SullyChen/Autopilot-TensorFlow/
                             smoothed_steering += 0.2 * pow(abs((pred_steering - smoothed_steering)), 2.0 / 3.0) * (pred_steering - smoothed_steering) / abs(pred_steering - smoothed_steering)
+                            
                             print(f"Speed: {pred_speed} Steering: {smoothed_steering}")
                             
                             gamepad.left_joystick_float(float(pred_steering), y_value_float=0.0)
