@@ -4,13 +4,20 @@
 # Introduction
 
 Trackmania 2020 is a free racing game that allows you to create custom racetracks
-and race on them. For my final project, I
+and race on them. For my final project, I decided to explore Convolutional Neural Networks
+by training one to drive the Trackmania car. The CNN takes in images from the game
+and outputs steering and speed information to control the car.
 
 # Data Collection
 
+In order to get reliable speed data from the car, I utilized a scripting platform
+built for Trackmania 2020 called [OpenPlanet](https://openplanet.nl/). OpenPlanet
+allowed me to run scripts inside of TrackMania and access information from the
+game.
+
 # Model
 
-The model I used is based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
+The model I used was based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
 In that paper, they train a self-driving car on real world data. I thought that the model architecture would
 be a good starting point for my model. Here is the neural net that NVidia used:
 
@@ -19,6 +26,8 @@ be a good starting point for my model. Here is the neural net that NVidia used:
 After experimentation, I added batch normalization layers between each convolutional layer to
 improve performance on my dataset. I also scaled it to work with my 64x64 image input. Here is the
 neural net that I used:
+
+![TrackmaniaNet Arch](imgs/model_diagram.png)
 
 # Challenges
 
