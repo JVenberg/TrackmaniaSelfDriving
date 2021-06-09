@@ -131,6 +131,7 @@ dmypy.json
 # Custom
 
 data
+media
 raw_data
 wandb
 api_key.txt
