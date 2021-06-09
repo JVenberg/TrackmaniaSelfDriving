@@ -16,7 +16,7 @@ PORT = 65432
 MAX_FPS = 10
 SAVE_BUFFER_SECONDS = 8
 
-# Inputs XboxController wrapper taken from: https://github.com/kevinhughes27/TensorKart/blob/master/utils.py
+# Inputs XboxController wrapper adapted slightly from: https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python
 class XboxController(object):
     MAX_TRIG_VAL = 256
     MAX_JOY_VAL = 32768

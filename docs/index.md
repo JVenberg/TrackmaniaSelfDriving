@@ -59,9 +59,11 @@ be a good starting point for my model. Here is the neural net that NVidia descri
 ![NVidia Arch](imgs/nvidia_model.png)
 
 After experimentation, I added batch normalization layers between each convolutional layer to
-improve performance on my dataset. I also scaled it to work with my 64x64 image input. I also found that
+improve performance on my dataset. Additionally, I added dropout regularization between each
+densely connected layer in order to improve generalization of the model. I also found that
 a final atan operation after the last densely connected layer slightly improved performance compared to
-no operation or softsign. Here is the neural net that I used:
+no operation or softsign. Finally, I scaled it to work with my 64x64 image input. Here is the neural net
+that I used:
 
 ![TrackmaniaNet Arch](imgs/model_diagram.png)
 
@@ -89,7 +91,7 @@ the recording, put the car in an unideal situation, then resume recording the co
 
 ## Training & Tuning
 
-For this project, I wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
+For this project, I also wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
 I found that RayTune allowed me to automate the parameter sweep process while also parallelizing the
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
 a tuning script that
@@ -114,7 +116,26 @@ a tuning script that
 
 Probably the largest potential improvement would be collecting more high-quality training data.
 I suspect that a large reason for the occasionally unpredictable, noisy, and non-fault-tolerant
-performance of the model is the lack of large amounts of data to learn from.
+performance of the model is the lack of large amounts of data to learn from. If I had more time,
+I would have implemented a dual recording/inferencing script that quickly allowed me to switch
+between the model and my own inputs. This would allow me to record specific scenarios where the
+model is failing at and allow me to get more relevant data for learning.
+
+Additionally, if I had more time, I would experiment with changing the model more. I only added
+small adjustments to the NVidia model, but I could have potentially improved it more to fit the
+task.
 
 ## Code Citations
+| File | Work Description |
+| --- | --- |
+| `dataset.py` | Implemented by me. Heavily based on examples from [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). |
+| `inference.py` | Implemented entirely by me besides one line of steering smoothing from [this project](https://github.com/SullyChen/Autopilot-TensorFlow/). |
+| `make_link.bat` | Implemented entirely by me to hard link OpenPlanet plugin file to plugin dir. |
+| `model.py` | Implemented by me. Inspired by [NVidia](https://arxiv.org/pdf/1604.07316.pdf). Adapted from [examples from class](https://github.com/pjreddie/uwimg/blob/main/tutorial2_cnns_in_pytorch.ipynb). |
+| `Plugin_TrackManiaCustomAPI.as` | Implemented entirely by me. |
+| `process_data.py` | Implemented entirely by me.
+| `recorder.py` | Implemented entirely by me besides XboxController class adapted slightly from [here](https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python). |
+| `train.py` | Implemented by me. Adapted from [examples from class](https://github.com/pjreddie/uwimg/blob/main/tutorial2_cnns_in_pytorch.ipynb). |
+| `tune.py` | Implemented entirely by me. Adapted from [PyTorch](https://pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html). |
+| `visualize_model.py` | Implemented entirely by me. |
 
