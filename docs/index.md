@@ -26,6 +26,11 @@ elevation changes, and some that were completely flat. Of these tracks, I subjec
 to multiple different lighting conditions to try to get the model to generalize regardless
 of lighting. Here are a few examples of the tracks that I recorded on:
 
+![Flat - Day](imgs/flat_day.png)
+![Flat - Night](imgs/flat_night.png)
+![Intermediate - Sunrise](imgs/intermediate_sunrise.png)
+![Intermediate - Night](imgs/intermediate_night.png)
+
 In order to get the data from the [OpenPlanet script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
 script, I used network sockets to communicate the telemetry data from the car to the recorder.
 I also used d3dshot to get fast screenshots of the game view. I choose a fixed angle car view that
@@ -54,16 +59,21 @@ Here is an example of what the data looks like after processing:
 
 The model I used was based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
 In that paper, they train a self-driving car on real world data. I thought that the model architecture would
-be a good starting point for my model. Here is the neural net that NVidia described in their paper:
+be a good starting point for my model. The model is a regression model consisting
+of 5 convolutional layers and 5 densely connected layers with one steering output.
+Here is the neural net that NVidia described in their paper:
 
 ![NVidia Arch](imgs/nvidia_model.png)
 
-After experimentation, I added batch normalization layers between each convolutional layer to
-improve performance on my dataset. Additionally, I added dropout regularization between each
+I expanded the output to be two values instead of one for both steering and speed. I used a
+Relu activation function for each densely connected layer. After experimentation, I added
+batch normalization layers between each convolutional layer to improve performance
+on my dataset. Additionally, I added dropout regularization between each
 densely connected layer in order to improve generalization of the model. I also found that
 a final atan operation after the last densely connected layer slightly improved performance compared to
 no operation or softsign. Finally, I scaled it to work with my 64x64 image input. Here is the neural net
-that I used:
+that I used (the dropout layers aren't shown since the visualization library doesn't support the
+training configuration of the network):
 
 ![TrackmaniaNet Arch](imgs/model_diagram.png)
 
@@ -96,9 +106,29 @@ I found that RayTune allowed me to automate the parameter sweep process while al
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
 a tuning script that
 
+After finding the ideal hyperparameters, I trained the model over 15 epochs.
+
 ## Results
 
+Since the model is a regression model, I measured accuracy of the model to be the percent of result that
+were within 0.10 of the expected value. Testing the tuned model on the test dataset yielded these results:
 
+| Dataset | Loss | Overall Correctness | Speed Correctness | Steering Correctness |
+| --- | --- | --- | --- | --- |
+| Training | 0 | 0 | 0 | 0 |
+| Test | 0 | 0 | 0 | 0 |
+
+As explained earlier, the accuracy probably isn't that great due to
+the large amount of noise and bad data. However, the accuracy is only one part of the picture. The real questions is how does it perform when used to actually control the car...
+
+The results of using the model to control the car were both impressive and underwhelming. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day.
+
+Here is an example of it running well on a greatly simplified map that was _not_ included in the training or test data (3rd person perspective was a replay for reference; it only inferenced on the 1st person perspective):
+
+### Maps
+
+![Simple Day](imgs/simple_day.png)
+![Simple Night](imgs/simple_night.png)
 
 ### Trackmania 2020 Self-Driving - Day - 1st Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/J7W1Fy5_ayA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -111,6 +141,8 @@ a tuning script that
 
 ### Trackmania 2020 Self-Driving - Night - 3rd Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/q7tpanRJJZ4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Overall, I was happy with the performance, and it leaves room for improvement.
 
 ## Potential Improvements
 
