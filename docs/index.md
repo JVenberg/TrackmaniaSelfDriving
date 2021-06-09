@@ -109,7 +109,7 @@ training using fractional GPUs and also early termination of poorly performing t
 ### [Interactive WandB Report](https://wandb.ai/jackvenberg/raytune-trackmania-hyperparameter-tuning/reports/TrackmaniaNet-HyperParameter-Tuning--Vmlldzo3NjMyMzg)
 
 
-After finding the ideal hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
+After finding optimized hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
 
 ![Training](imgs/training.png)
 
