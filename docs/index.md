@@ -104,9 +104,14 @@ the recording, put the car in an unideal situation, then resume recording the co
 For this project, I also wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
 I found that RayTune allowed me to automate the parameter sweep process while also parallelizing the
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
-[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that.
+[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that sweeps over a configuration space. I optimized over 4 parameters: learning rate, batch size, decay, drop out percent. I also integrated the reporting with [wandb.ai](wandb.ai) to visualize the trials and results in an interactive way. Here is an example of one of my parameter sweeps:
+
+### [Interactive WandB Report](https://wandb.ai/jackvenberg/raytune-trackmania-hyperparameter-tuning/reports/TrackmaniaNet-HyperParameter-Tuning--Vmlldzo3NjMyMzg)
+
 
 After finding the ideal hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
+
+![Training](imgs/training.png)
 
 ## Results
 
