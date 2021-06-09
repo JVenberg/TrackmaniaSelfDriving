@@ -57,7 +57,7 @@ Here is an example of what the data looks like after processing:
 
 ## Model
 
-The model I used was based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
+[The model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/model.py) I used was based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
 In that paper, they train a self-driving car on real world data. I thought that the model architecture would
 be a good starting point for my model. The model is a regression model consisting
 of 5 convolutional layers and 5 densely connected layers with one steering output.
@@ -104,9 +104,9 @@ the recording, put the car in an unideal situation, then resume recording the co
 For this project, I also wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
 I found that RayTune allowed me to automate the parameter sweep process while also parallelizing the
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
-a tuning script that
+[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that.
 
-After finding the ideal hyperparameters, I trained the model over 15 epochs.
+After finding the ideal hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
 
 ## Results
 
@@ -121,7 +121,7 @@ were within 0.10 of the expected value. Testing the tuned model on the test data
 As explained earlier, the accuracy probably isn't that great due to
 the large amount of noise and bad data. However, the accuracy is only one part of the picture. The real questions is how does it perform when used to actually control the car...
 
-The results of using the model to control the car were both impressive and underwhelming. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day.
+The results of [using the model to control the car](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/inference.py) were both impressive and underwhelming. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day.
 
 Here is an example of it running well on a greatly simplified map that was _not_ included in the training or test data (3rd person perspective was a replay for reference; it only inferenced on the 1st person perspective):
 
