@@ -21,7 +21,7 @@ game. This not only gave me access to the speed of the car, but it also allowed
 me to track when the game was actually in progress which automated the starting/stopping
 of the recording process.
 
-In order to get the data from the OpenPlanet script to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
+In order to get the data from the [OpenPlanet script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
 script, I used network sockets to communicate the telemetry data from the car to the recorder.
 I also used d3dshot to get fast screenshots of the game view. I choose a fixed angle car view that
 did not include any of the car in it to minimize any affect that the car's pose and camera angle might have
