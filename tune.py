@@ -34,7 +34,7 @@ def load_data(data_dir="data"):
     return training_data, test_data
 
 
-def accuracy_and_loss(net, dataloader, err_thresh=0.05):
+def accuracy_and_loss(net, dataloader, err_thresh=0.1):
     loss_sum = 0.0
     correct = 0
     correct_speed = 0
@@ -152,8 +152,8 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
         "drop": tune.quniform(0.15, 0.3, 0.025),
         "decay": tune.loguniform(5e-5, 5e-3),
         "lr": tune.loguniform(1e-3, 1e-1),
-        "batch_size": tune.choice([32, 64]),
-        "wandb": {"project": "raytune-trackmania"},
+        "batch_size": tune.choice([48, 64, 80]),
+        "wandb": {"project": "raytune-trackmania-new-acc", "name": "trackmania"},
     }
     scheduler = ASHAScheduler(
         metric="loss",

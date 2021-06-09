@@ -55,24 +55,26 @@ def view_data(data):
     cols, rows = 3, 3
     for i in range(1, cols * rows + 1):
         sample_idx = torch.randint(len(data), size=(1,)).item()
-        img, speed, steering = data[sample_idx]
+        img, (speed, steering) = data[sample_idx]
         figure.add_subplot(rows, cols, i)
-        plt.title("Speed: " + str(speed) + "\nSteering: " + str(steering))
+        plt.title("Speed: %.3f\nSteering: %.3f" % (float(speed), float(steering)))
         plt.axis("off")
         plt.imshow(img.squeeze(), cmap="gray")
     plt.show()
 
 
 def view_dataloader(dataloader):
-    train_features, train_speed, train_steering = next(iter(dataloader))
-    print(f"Feature batch shape: {train_features.size()}")
-    print(f"Speed batch shape: {train_speed.size()}")
-    print(f"Steering batch shape: {train_steering.size()}")
-    img = train_features[0].squeeze()
-    speed = train_speed[0]
-    steering = train_steering[0]
+    features, labels = next(iter(dataloader))
+    speed_labels = labels[:, 0]
+    steering_labels = labels[:, 1]
+    print(f"Feature batch shape: {features.size()}")
+    print(f"Speed batch shape: {speed_labels.size()}")
+    print(f"Steering batch shape: {steering_labels.size()}")
+    img = features[0].squeeze()
+    speed = speed_labels[0]
+    steering = steering_labels[0]
     plt.imshow(img, cmap="gray")
-    print(f"Speed: {speed} Steering: {steering}")
+    plt.title("Speed: %.3f\nSteering: %.3f" % (float(speed), float(steering)))
     plt.show()
 
 
