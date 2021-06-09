@@ -11,9 +11,9 @@ from functools import partial
 from model import TrackmaniaNet
 from dataset import TrackManiaDataset
 
-import ray
 from ray import tune
 from ray.tune import CLIReporter
+from ray.tune.integration.wandb import WandbLogger
 from ray.tune.schedulers import ASHAScheduler
 
 import matplotlib.pyplot as plt
@@ -115,6 +115,7 @@ def train(config, checkpoint_dir=None, data_dir=None, epoch=10):
 
         # Validation loss
         accuracy, speed_accuracy, steer_accuracy, val_loss = accuracy_and_loss(trackmania_net, valloader)
+        accuracy, speed_accuracy, steer_accuracy, val_loss = float(accuracy), float(speed_accuracy), float(steer_accuracy), float(val_loss)
 
         with tune.checkpoint_dir(epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
@@ -123,15 +124,18 @@ def train(config, checkpoint_dir=None, data_dir=None, epoch=10):
         tune.report(loss=val_loss, accuracy=accuracy, speed_accuracy=speed_accuracy, steer_accuracy=steer_accuracy)
     print("Finished Training")
 
-def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
+def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1, wandb_api_key=None):
     data_dir = os.path.abspath("./data")
     checkpoint_dir = os.path.abspath("./checkpoints")
     print(data_dir)
     config = {
         "drop": tune.quniform(0.15, 0.3, 0.025),
         "decay": tune.loguniform(5e-5, 5e-3),
-        "lr": tune.loguniform(1e-4, 1e-1),
-        "batch_size": tune.choice([32, 64])
+        "lr": tune.loguniform(1e-3, 1e-1),
+        "batch_size": tune.choice([32, 64]),
+        "wandb": {
+            "project": "raytune-trackmania"
+        }
     }
     scheduler = ASHAScheduler(
         metric="loss",
@@ -140,7 +144,6 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
         grace_period=1,
         reduction_factor=2)
     reporter = CLIReporter(
-        # parameter_columns=["l1", "l2", "lr", "batch_size"],
         metric_columns=["loss", "accuracy", "speed_accuracy", "steer_accuracy", "training_iteration"])
     result = tune.run(
         partial(train, data_dir=data_dir),
@@ -149,6 +152,7 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
         num_samples=num_samples,
         scheduler=scheduler,
         progress_reporter=reporter,
+        loggers=[WandbLogger],
         max_failures=5)
 
     best_trial = result.get_best_trial("loss", "min", "last")
@@ -176,5 +180,4 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
     print("Best Trial Test Set\n\tAccuracy: {}\n\tSpeed Accuracy: {}\n\tSteer Accuracy: {}\n\tLoss: {}".format(test_acc, test_acc_speed, test_acc_steer, loss))
 
 if __name__ == "__main__":
-    # You can change the number of GPUs per trial here:
     main(num_samples=100, max_num_epochs=10, gpus_per_trial=0.5)
