@@ -1,4 +1,3 @@
-
 import csv
 import os
 
@@ -11,9 +10,15 @@ import matplotlib.pyplot as plt
 
 SPEED_SCALE = 400
 
+
 class TrackManiaDataset(Dataset):
     def __init__(
-        self, data_dir, annotations_file_name, only_steer=False, transform=None, target_transform=None
+        self,
+        data_dir,
+        annotations_file_name,
+        only_steer=False,
+        transform=None,
+        target_transform=None,
     ):
         anno_file = open(os.path.join(data_dir, annotations_file_name))
         self.img_labels = list(csv.DictReader(anno_file))
@@ -37,11 +42,12 @@ class TrackManiaDataset(Dataset):
         if self.target_transform:
             speed = self.target_transform(speed)
             steering = self.target_transform(steering)
-        
+
         if self.only_steer:
             return image, torch.from_numpy(np.array([steering])).float()
-            
+
         return image, torch.from_numpy(np.array([speed, steering])).float()
+
 
 def view_data(data):
     figure = plt.figure(figsize=(8, 8))

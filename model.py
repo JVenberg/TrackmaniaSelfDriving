@@ -5,9 +5,7 @@ import torch.nn.functional as F
 # Model based on NVidia paper: https://arxiv.org/pdf/1604.07316.pdf
 class TrackmaniaNet(nn.Module):
     def __init__(self, drop_out=0.2):
-        super(
-            TrackmaniaNet, self
-        ).__init__()
+        super(TrackmaniaNet, self).__init__()
         self.drop_out = drop_out
         self.conv1 = nn.Conv2d(1, 24, 5, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(24)
@@ -61,11 +59,10 @@ class TrackmaniaNet(nn.Module):
         x = torch.atan(x)
         return x
 
+
 class TrackmaniaNetOnlySteer(nn.Module):
     def __init__(self, drop_out=0.2):
-        super(
-            TrackmaniaNetOnlySteer, self
-        ).__init__()
+        super(TrackmaniaNetOnlySteer, self).__init__()
         self.drop_out = drop_out
         self.conv1 = nn.Conv2d(1, 24, 5, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(24)

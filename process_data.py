@@ -21,6 +21,7 @@ def write_data_row(writer, img, file_name, speed, steering):
     writer.writerow({"img_file": file_name, "speed": speed, "steering": steering})
     img.save(os.path.join(OUT_DIR, file_name))
 
+
 def convert_raw_to_output():
     if os.path.isdir(OUT_DIR):
         shutil.rmtree(OUT_DIR)
@@ -50,6 +51,7 @@ def convert_raw_to_output():
             if i % 100 == 0:
                 print(str((i + 1) / len(rows) * 100) + '%')
 
+
 def split_data():
     with open(os.path.join(OUT_DIR, OUT_DATA_FILE), newline="") as csv_label_file, \
         open(os.path.join(OUT_DIR, OUT_TRAIN_FILE), 'w', newline="") as csv_train_file, \
@@ -67,6 +69,7 @@ def split_data():
 
         train_writer.writerows(train)
         test_writer.writerows(test)
+
 
 convert_raw_to_output()
 split_data()
