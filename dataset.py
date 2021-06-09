@@ -2,8 +2,9 @@ import csv
 import os
 
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
+import torchvision.transforms as transforms
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -73,3 +74,41 @@ def view_dataloader(dataloader):
     plt.imshow(img, cmap="gray")
     print(f"Speed: {speed} Steering: {steering}")
     plt.show()
+
+
+def load_data():
+    training_data = TrackManiaDataset(
+        "data",
+        "train.csv",
+        transform=transforms.Compose([transforms.ConvertImageDtype(torch.float)]),
+    )
+    test_data = TrackManiaDataset(
+        "data",
+        "test.csv",
+        transform=transforms.Compose([transforms.ConvertImageDtype(torch.float)]),
+    )
+
+    return training_data, test_data
+
+
+def load_dataloaders(training_data, test_data, batch_size=64):
+    train_dataloader = DataLoader(
+        training_data,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True,
+    )
+    test_dataloader = DataLoader(
+        test_data, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True
+    )
+
+    return train_dataloader, test_dataloader
+
+
+if __name__ == "__main__":
+    training_data, test_data = load_data()
+    view_data(training_data)
+
+    training_dataloader, _ = load_dataloaders(training_data, test_data)
+    view_dataloader(training_dataloader)

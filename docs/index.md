@@ -30,8 +30,12 @@ on the training.
 In total I recorded ~70,000 data points over ~2 hours of driving to construct my dataset.
 I then [preprocessed that data](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/process_data.py)
 by flipping the image and steering angles to ensure that there would not be any bias in one direction
-which doubled the data points to ~140,000, and I resized each image to be 64x64. I then split that
-data 85%-15% into a training and test dataset.
+which doubled the data points to ~140,000. I then split that data 85%-15% into a training and test dataset.
+I also resized each image to be 64x64 to reduce the size of the model and improve runtime performance,
+since I knew that I would be aiming for realtime performance. I also converted each image to greyscale
+to reduce the size of the dataset, since the color of the image has no correlation to the direction of the track.
+
+Here is an example of what the data looks like:
 
 ## Model
 
