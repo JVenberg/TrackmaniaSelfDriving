@@ -29,9 +29,9 @@ After experimentation, I added batch normalization layers between each convoluti
 improve performance on my dataset. I also scaled it to work with my 64x64 image input. Here is the
 neural net that I used:
 
-![TrackmaniaNet Arch](imgs/model_diagram.png)
+<img src="imgs/model_diagram.png" alt="TrackmaniaNet Arch" style="margin:auto">
 
-#3 Challenges
+## Challenges
 
 ## Tuning
 
