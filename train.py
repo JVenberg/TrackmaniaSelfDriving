@@ -75,7 +75,7 @@ def train(net, dataloader, epochs=1, lr=0.01, momentum=0.9, decay=0.0, verbose=T
     return losses
 
 
-def accuracy_and_loss(net, dataloader, err_thresh=0.05):
+def accuracy_and_loss(net, dataloader, err_thresh=0.1):
     loss_sum = 0.0
     correct = 0
     correct_speed = 0
