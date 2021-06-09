@@ -34,10 +34,10 @@ of lighting. Here are a few examples of the tracks that I recorded on:
 In order to get the data from the [OpenPlanet script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
 script, I used network sockets to communicate the telemetry data from the car to the recorder.
 I also used d3dshot to get fast screenshots of the game view. I choose a fixed angle car view that
-did not include any of the car in it to minimize any affect that the car's pose and camera angle might have
+did not include any of the car in it to minimize any effect that the car's pose and camera angle might have
 on the training.
 
-Additionally, I implemented controller monitoring to get the steering angle inputted by me.
+Additionally, I implemented controller monitoring to get the steering angle input by me.
 I also implemented various keybinds to start/stop/pause the recording to aid in the recording process.
 I also implemented a datapoint cache that would cache around 10 seconds of results before saving them
 to disk. This allowed me to implement keybinds to revert data when I would crash in
@@ -48,7 +48,7 @@ I then [preprocessed that data](https://github.com/JVenberg/TrackmaniaSelfDrivin
 by flipping the image and steering angles to ensure that there would not be any bias in one direction
 which doubled the data points to ~140,000. I then split that data 85%-15% into a training and test dataset.
 I also resized each image to be 64x64 to reduce the size of the model and improve runtime performance,
-since I knew that I would be aiming for realtime performance. I also converted each image to greyscale
+since I knew that I would be aiming for real-time performance. I also converted each image to greyscale
 to reduce the size of the dataset, since the color of the image has no correlation to the direction of the track.
 
 Here is an example of what the data looks like after processing:
@@ -115,7 +115,7 @@ After finding optimized hyperparameters, [I trained the model](https://github.co
 
 ## Results
 
-Since the model is a regression model, I measured accuracy of the model to be the percent of result that
+Since the model is a regression model, I measured the accuracy of the model to be the percent of results that
 were within 0.10 of the expected value. Testing the tuned model on the test dataset yielded these results:
 
 | Dataset | Loss | Overall Correctness | Speed Correctness | Steering Correctness |
@@ -123,8 +123,8 @@ were within 0.10 of the expected value. Testing the tuned model on the test data
 | Training | 0.000466 | 26.558203% | 65.301796% | 39.880848% |
 | Test | 0.000565 | 24.595909% | 64.447144% | 37.061935% |
 
-As explained earlier, the accuracy probably isn't that great due to
-the large amount of noisy, bad data. However, the accuracy is only one part of the picture. The real questions is how does it perform when used to actually control the car...
+As explained earlier, the accuracy probably isn't great due to
+the large amount of noisy, bad data. However, the accuracy is only one part of the picture. The real question is how does it perform when used to control the car...
 
 The results of [using the model to control the car](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/inference.py) were both impressive and underwhelming. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day.
 
