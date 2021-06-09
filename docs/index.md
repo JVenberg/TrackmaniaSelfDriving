@@ -158,8 +158,9 @@ small adjustments to the NVidia model, but I could have potentially improved it 
 task.
 
 ## Code Citations
+
 | File | Work Description |
-| --- | --- |
+| --  | --- |
 | `dataset.py` | Implemented by me. Heavily based on examples from [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). |
 | `inference.py` | Implemented entirely by me besides one line of steering smoothing from [this project](https://github.com/SullyChen/Autopilot-TensorFlow/). |
 | `make_link.bat` | Implemented entirely by me to hard link OpenPlanet plugin file to plugin dir. |
