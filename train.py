@@ -119,6 +119,9 @@ if __name__ == "__main__":
         trackmania_net, train_dataloader, epochs=15, lr=LEARNING_RATE, decay=DECAY
     )
     torch.save(trackmania_net.state_dict(), "models/model_large_tune.pth")
+    plt.title('Loss vs Num Batches')
+    plt.ylabel('Loss')
+    plt.xlabel('Num Batches')
     plt.plot(smooth(conv_losses, 50))
 
     print(
