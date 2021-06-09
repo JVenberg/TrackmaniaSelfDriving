@@ -57,13 +57,13 @@ Here is an example of what the data looks like after processing:
 
 ## Model
 
-[The model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/model.py) I used was based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
+[The model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/model.py) I used was based on an Nvidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
 In that paper, they train a self-driving car on real world data. I thought that the model architecture would
 be a good starting point for my model. The model is a regression model consisting
 of 5 convolutional layers and 5 densely connected layers with one steering output.
-Here is the neural net that NVidia described in their paper:
+Here is the neural net that Nvidia described in their paper:
 
-![NVidia Arch](imgs/nvidia_model.png)
+![Nvidia Arch](imgs/nvidia_model.png)
 
 I expanded the output to be two values instead of one for both steering and speed. I used a
 Relu activation function for each densely connected layer. After experimentation, I added
@@ -104,9 +104,14 @@ the recording, put the car in an unideal situation, then resume recording the co
 For this project, I also wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
 I found that RayTune allowed me to automate the parameter sweep process while also parallelizing the
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
-[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that.
+[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that sweeps over a configuration space. I optimized over 4 parameters: learning rate, batch size, decay, drop out percent. I also integrated the reporting with [wandb.ai](wandb.ai) to visualize the trials and results in an interactive way. Here is an example of one of my parameter sweeps:
 
-After finding the ideal hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
+### [Interactive WandB Report](https://wandb.ai/jackvenberg/raytune-trackmania-hyperparameter-tuning/reports/TrackmaniaNet-HyperParameter-Tuning--Vmlldzo3NjMyMzg)
+
+
+After finding optimized hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
+
+![Training](imgs/training.png)
 
 ## Results
 
@@ -155,7 +160,7 @@ between the model and my own inputs. This would allow me to record specific scen
 model is failing at and allow me to get more relevant data for learning.
 
 Additionally, if I had more time, I would experiment with changing the model more. I only added
-small adjustments to the NVidia model, but I could have potentially improved it more to fit the
+small adjustments to the Nvidia model, but I could have potentially improved it more to fit the
 task.
 
 ## Code Citations
@@ -165,7 +170,7 @@ task.
 | `dataset.py` | Implemented by me. Heavily based on examples from [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). |
 | `inference.py` | Implemented entirely by me besides one line of steering smoothing from [this project](https://github.com/SullyChen/Autopilot-TensorFlow/). |
 | `make_link.bat` | Implemented entirely by me to hard link OpenPlanet plugin file to plugin dir. |
-| `model.py` | Implemented by me. Inspired by [NVidia](https://arxiv.org/pdf/1604.07316.pdf). Adapted from [examples from class](https://github.com/pjreddie/uwimg/blob/main/tutorial2_cnns_in_pytorch.ipynb). |
+| `model.py` | Implemented by me. Inspired by [Nvidia](https://arxiv.org/pdf/1604.07316.pdf). Adapted from [examples from class](https://github.com/pjreddie/uwimg/blob/main/tutorial2_cnns_in_pytorch.ipynb). |
 | `Plugin_TrackManiaCustomAPI.as` | Implemented entirely by me. |
 | `process_data.py` | Implemented entirely by me.
 | `recorder.py` | Implemented entirely by me besides XboxController class adapted slightly from [here](https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python). |
