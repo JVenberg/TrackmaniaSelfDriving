@@ -35,7 +35,9 @@ I also resized each image to be 64x64 to reduce the size of the model and improv
 since I knew that I would be aiming for realtime performance. I also converted each image to greyscale
 to reduce the size of the dataset, since the color of the image has no correlation to the direction of the track.
 
-Here is an example of what the data looks like:
+Here is an example of what the data looks like after processing:
+
+![Data Example](imgs/data_example.png)
 
 ## Model
 
