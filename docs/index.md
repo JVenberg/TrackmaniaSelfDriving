@@ -121,7 +121,8 @@ were within 0.10 of the expected value. Testing the tuned model on the test data
 As explained earlier, the accuracy probably isn't that great due to
 the large amount of noisy, bad data. However, the accuracy is only one part of the picture. The real questions is how does it perform when used to actually control the car...
 
-The results of [using the model to control the car](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/inference.py) were both impressive and underwhelming. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day.
+The results of [using the model to control the car](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/inference.py) were impressive, but not perfect. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day. It was also very fast, only taking 2-5 ms to go from
+image to prediction, which allowed the car to respond quickly to different situations.
 
 Here is an example of it running well on a greatly simplified map that was _not_ included in the training or test data (3rd person perspective was a replay for reference; it only inferenced on the 1st person perspective):
 
