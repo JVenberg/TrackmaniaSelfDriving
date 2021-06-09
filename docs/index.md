@@ -1,16 +1,26 @@
 
+# Summary Video
+
 # Introduction
 
-Hello
-
-1. List
-2. Test
+Trackmania 2020 is a free racing game that allows you to create custom racetracks
+and race on them. For my final project, I
 
 # Data Collection
 
 # Model
 
-# Experiments
+The model I used is based on an NVidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
+In that paper, they train a self-driving car on real world data. I thought that the model architecture would
+be a good starting point for my model. Here is the neural net that NVidia used:
+
+![NVidia Arch](imgs/nvidia_model.png)
+
+After experimentation, I added batch normalization layers between each convolutional layer to
+improve performance on my dataset. I also scaled it to work with my 64x64 image input. Here is the
+neural net that I used:
+
+# Challenges
 
 # Tuning
 
@@ -27,3 +37,5 @@ Hello
 
 ## Trackmania 2020 Self-Driving - Night - 3rd Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/q7tpanRJJZ4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+# Potential Improvements

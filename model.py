@@ -2,7 +2,8 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-# Model based on NVidia paper: https://arxiv.org/pdf/1604.07316.pdf
+
+# Network based on NVidia paper: https://arxiv.org/pdf/1604.07316.pdf
 class TrackmaniaNet(nn.Module):
     def __init__(self, drop_out=0.2):
         super(TrackmaniaNet, self).__init__()
