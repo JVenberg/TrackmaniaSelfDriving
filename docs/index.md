@@ -131,22 +131,32 @@ image to prediction, which allowed the car to respond quickly to different situa
 
 Here is an example of it running well on a greatly simplified map that was _not_ included in the training or test data (3rd person perspective was a replay for reference; it only inferenced on the 1st person perspective):
 
-### Maps
+### Simple Maps
 
 ![Simple Day](imgs/simple_day.png)
 ![Simple Night](imgs/simple_night.png)
 
-### Trackmania 2020 Self-Driving - Day - 1st Person
+#### Trackmania 2020 Self-Driving - Day - 1st Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/J7W1Fy5_ayA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### Trackmania 2020 Self-Driving - Day - 3rd Person
+#### Trackmania 2020 Self-Driving - Day - 3rd Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_x_mLMAUybc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### Trackmania 2020 Self-Driving - Night - 1st Person
+#### Trackmania 2020 Self-Driving - Night - 1st Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/E27esEBTplI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### Trackmania 2020 Self-Driving - Night - 3rd Person
+#### Trackmania 2020 Self-Driving - Night - 3rd Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/q7tpanRJJZ4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Intermediate Map
+
+I also ran the car on a modified version of one of the training tracks with less sharp corners and different lighting. Also, due to a bug in an update of the game, I was only able to make the car transparent instead of hidden. It was able to generalize even with the car in frame:
+
+![Intermediate Less Curve](imgs/intermediate_less_curve_day.png)
+
+#### Trackmania 2020 Self-Driving - Intermediate - Day - 1st Person
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0y7iXZR67Qo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 Overall, I was happy with the performance, and it leaves room for improvement.
 
