@@ -132,4 +132,6 @@ dmypy.json
 
 data
 raw_data
+wandb
+api_key.txt
 .vscode

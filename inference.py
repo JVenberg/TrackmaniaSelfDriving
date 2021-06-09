@@ -25,7 +25,7 @@ if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using {} device".format(device))
 
-    trackmania_net = TrackmaniaNet(drop_out=0.2)
+    trackmania_net = TrackmaniaNet(drop_out=0.15)
     trackmania_net.load_state_dict(torch.load('models/model_large_tune.pth'))
     trackmania_net.eval()
     trackmania_net.to(device)
@@ -78,7 +78,6 @@ if __name__ == '__main__':
                                 json_data = json.loads(last_line)
                                 if json_data['speed']:
                                     delta = pred_speed - json_data['speed']
-                                    # print(delta)
                                     if delta > 0:
                                         gamepad.left_trigger_float(value_float=random.uniform(-0.0001, 0.0001))
                                         gamepad.right_trigger_float(value_float=random.uniform(0.89999, 0.90001))

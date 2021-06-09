@@ -6,7 +6,6 @@
 int PORT = 65432;
 string URL = "127.0.0.1";
 
-
 Net::Socket@ sock;
 
 void Main()
@@ -31,7 +30,6 @@ void Main()
                     continue;
                 }
                 print(Json::Write(json));
-                // prevRaceTime = raceTime;
                 paused = false;
             } else if (!paused) {
                 paused = true;
@@ -49,7 +47,6 @@ void Main()
         yield();
     }
 
-    // We're all done!
     print("All done!");
     sock.Close();
 }
