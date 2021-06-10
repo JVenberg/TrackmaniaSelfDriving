@@ -3,6 +3,16 @@
 # Summary Video
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uNpkn2Vv5N4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Data Collection](#data-collection)
+3. [Model](#model)
+4. [Challenges](#challenges)
+5. [Training & Tuning](#training--tuning)
+6. [Results](#results)
+7. [Potential Improvements](#potential-improvements)
+8. [Code Citations](#code-citations)
+
 # Introduction
 
 Trackmania 2020 is a free racing game that allows you to create custom racetracks
