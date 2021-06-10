@@ -1,3 +1,4 @@
+# [Website](https://jvenberg.github.io/TrackmaniaSelfDriving/)
 
 # Summary Video
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uNpkn2Vv5N4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -25,12 +26,12 @@ elevation changes, and some that were completely flat. Of these tracks, I subjec
 to multiple different lighting conditions to try to get the model to generalize regardless
 of lighting. Here are a few examples of the tracks that I recorded on:
 
-![Flat - Day](imgs/flat_day.png)
-![Flat - Night](imgs/flat_night.png)
-![Intermediate - Sunrise](imgs/intermediate_sunrise.png)
-![Intermediate - Night](imgs/intermediate_night.png)
+![Flat - Day](docs/imgs/flat_day.png)
+![Flat - Night](docs/imgs/flat_night.png)
+![Intermediate - Sunrise](docs/imgs/intermediate_sunrise.png)
+![Intermediate - Night](docs/imgs/intermediate_night.png)
 
-In order to get the data from the [OpenPlanet script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
+In order to get the data from the [OpenPlanet script](Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
 script, I used network sockets to communicate the telemetry data from the car to the recorder.
 I also used d3dshot to get fast screenshots of the game view. I choose a fixed angle car view that
 did not include any of the car in it to minimize any effect that the car's pose and camera angle might have
@@ -52,7 +53,7 @@ to reduce the size of the dataset, since the color of the image has no correlati
 
 Here is an example of what the data looks like after processing:
 
-![Data Example](imgs/data_example.png)
+![Data Example](docs/imgs/data_example.png)
 
 # Model
 
@@ -62,7 +63,7 @@ be a good starting point for my model. The model is a regression model consistin
 of 5 convolutional layers and 5 densely connected layers with one steering output.
 Here is the neural net that Nvidia described in their paper:
 
-![Nvidia Arch](imgs/nvidia_model.png)
+![Nvidia Arch](docs/imgs/nvidia_model.png)
 
 I expanded the output to be two values instead of one for both steering and speed. I used a
 Relu activation function for each densely connected layer. After experimentation, I added
@@ -74,7 +75,7 @@ no operation or softsign. Finally, I scaled it to work with my 64x64 image input
 that I used (the dropout layers aren't shown since the visualization library doesn't support the
 training configuration of the network):
 
-![TrackmaniaNet Arch](imgs/model_diagram.png)
+![TrackmaniaNet Arch](docs/imgs/model_diagram.png)
 
 # Challenges
 
@@ -110,7 +111,7 @@ training using fractional GPUs and also early termination of poorly performing t
 
 After finding optimized hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
 
-![Training](imgs/training.png)
+![Training](docs/imgs/training.png)
 
 # Results
 
@@ -132,8 +133,8 @@ Here is an example of it running well on a greatly simplified map that was _not_
 
 ## Simple Maps
 
-![Simple Day](imgs/simple_day.png)
-![Simple Night](imgs/simple_night.png)
+![Simple Day](docs/imgs/simple_day.png)
+![Simple Night](docs/imgs/simple_night.png)
 
 ### Trackmania 2020 Self-Driving - Day - 1st Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/J7W1Fy5_ayA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -152,7 +153,7 @@ Here is an example of it running well on a greatly simplified map that was _not_
 
 I also ran the car on a modified version of one of the training tracks with less sharp corners and different lighting. Also, due to a bug in an update of the game, I was only able to make the car transparent instead of hidden. It was able to generalize even with the car in frame:
 
-![Intermediate Less Curve](imgs/intermediate_less_curve_day.png)
+![Intermediate Less Curve](docs/imgs/intermediate_less_curve_day.png)
 
 ### Trackmania 2020 Self-Driving - Intermediate - Day - 1st Person
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0y7iXZR67Qo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
