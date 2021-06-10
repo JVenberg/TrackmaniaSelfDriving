@@ -22,6 +22,8 @@ and outputs steering and speed information to control the car. By training the
 model on example gameplay consisting of screenshots and car telemetry, the model is
 able to replicate the driving behavior to autonomously control the car.
 
+[[Back To Top](#table-of-contents)]
+
 # Data Collection
 
 In order to get reliable telemetry from the car for training, I utilized a scripting platform
@@ -65,6 +67,8 @@ Here is an example of what the data looks like after processing:
 
 ![Data Example](docs/imgs/data_example.png)
 
+[[Back To Top](#table-of-contents)]
+
 # Model
 
 [The model](model.py) I used was based on an Nvidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
@@ -87,6 +91,8 @@ training configuration of the network):
 
 ![TrackmaniaNet Arch](docs/imgs/model_diagram.png)
 
+[[Back To Top](#table-of-contents)]
+
 # Challenges
 
 There are a number of challenges/obstacles that I ran into with the data collection and training of
@@ -108,6 +114,7 @@ a wall, being largely off center, or right against walls. This resulted in poor 
 got in these situations. In order to remedy this, I went back and recorded a lot of data where I would pause
 the recording, put the car in an unideal situation, then resume recording the correction.
 
+[[Back To Top](#table-of-contents)]
 
 # Training & Tuning
 
@@ -122,6 +129,8 @@ training using fractional GPUs and also early termination of poorly performing t
 After finding optimized hyperparameters, [I trained the model](train.py) over 15 epochs.
 
 ![Training](docs/imgs/training.png)
+
+[[Back To Top](#table-of-contents)]
 
 # Results
 
@@ -170,6 +179,8 @@ I also ran the car on a modified version of one of the training tracks with less
 
 Overall, I was happy with the performance, and it leaves room for improvement.
 
+[[Back To Top](#table-of-contents)]
+
 # Potential Improvements
 
 Probably the largest potential improvement would be collecting more high-quality training data.
@@ -182,6 +193,8 @@ model is failing at and allow me to get more relevant data for learning.
 Additionally, if I had more time, I would experiment with changing the model more. I only added
 small adjustments to the Nvidia model, but I could have potentially improved it more to fit the
 task.
+
+[[Back To Top](#table-of-contents)]
 
 # Code Citations
 
@@ -198,3 +211,4 @@ task.
 | `tune.py` | Implemented entirely by me. Adapted from [PyTorch](https://pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html). |
 | `visualize_model.py` | Implemented entirely by me. |
 
+[[Back To Top](#table-of-contents)]
