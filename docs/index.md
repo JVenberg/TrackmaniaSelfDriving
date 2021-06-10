@@ -4,6 +4,16 @@
 ## Summary Video
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uNpkn2Vv5N4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Data Collection](#data-collection)
+3. [Model](#model)
+4. [Challenges](#challenges)
+5. [Training & Tuning](#training--tuning)
+6. [Results](#results)
+7. [Potential Improvements](#potential-improvements)
+8. [Code Citations](#code-citations)
+
 ## Introduction
 
 Trackmania 2020 is a free racing game that allows you to create custom racetracks
@@ -12,6 +22,8 @@ by training one to drive the Trackmania car. The CNN takes in images from the ga
 and outputs steering and speed information to control the car. By training the
 model on example gameplay consisting of screenshots and car telemetry, the model is
 able to replicate the driving behavior to autonomously control the car.
+
+[[Back To Top](#table-of-contents)]
 
 ## Data Collection
 
@@ -56,6 +68,8 @@ Here is an example of what the data looks like after processing:
 
 ![Data Example](imgs/data_example.png)
 
+[[Back To Top](#table-of-contents)]
+
 ## Model
 
 [The model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/model.py) I used was based on an Nvidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
@@ -78,6 +92,8 @@ training configuration of the network):
 
 ![TrackmaniaNet Arch](imgs/model_diagram.png)
 
+[[Back To Top](#table-of-contents)]
+
 ## Challenges
 
 There are a number of challenges/obstacles that I ran into with the data collection and training of
@@ -99,6 +115,7 @@ a wall, being largely off center, or right against walls. This resulted in poor 
 got in these situations. In order to remedy this, I went back and recorded a lot of data where I would pause
 the recording, put the car in an unideal situation, then resume recording the correction.
 
+[[Back To Top](#table-of-contents)]
 
 ## Training & Tuning
 
@@ -113,6 +130,8 @@ training using fractional GPUs and also early termination of poorly performing t
 After finding optimized hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
 
 ![Training](imgs/training.png)
+
+[[Back To Top](#table-of-contents)]
 
 ## Results
 
@@ -161,6 +180,8 @@ I also ran the car on a modified version of one of the training tracks with less
 
 Overall, I was happy with the performance, and it leaves room for improvement.
 
+[[Back To Top](#table-of-contents)]
+
 ## Potential Improvements
 
 Probably the largest potential improvement would be collecting more high-quality training data.
@@ -173,6 +194,8 @@ model is failing at and allow me to get more relevant data for learning.
 Additionally, if I had more time, I would experiment with changing the model more. I only added
 small adjustments to the Nvidia model, but I could have potentially improved it more to fit the
 task.
+
+[[Back To Top](#table-of-contents)]
 
 ## Code Citations
 
@@ -189,3 +212,4 @@ task.
 | `tune.py` | Implemented entirely by me. Adapted from [PyTorch](https://pytorch.org/tutorials/beginner/hyperparameter_tuning_tutorial.html). |
 | `visualize_model.py` | Implemented entirely by me. |
 
+[[Back To Top](#table-of-contents)]
