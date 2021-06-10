@@ -1,7 +1,7 @@
 # [Website](https://jvenberg.github.io/TrackmaniaSelfDriving/)
 
 # Summary Video
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uNpkn2Vv5N4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/uNpkn2Vv5N4
 
 # Table of Contents
 1. [Introduction](#introduction)
@@ -156,16 +156,16 @@ Here is an example of it running well on a greatly simplified map that was _not_
 ![Simple Night](docs/imgs/simple_night.png)
 
 ### Trackmania 2020 Self-Driving - Day - 1st Person
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/J7W1Fy5_ayA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/J7W1Fy5_ayA
 
 ### Trackmania 2020 Self-Driving - Day - 3rd Person
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_x_mLMAUybc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/_x_mLMAUybc
 
 ### Trackmania 2020 Self-Driving - Night - 1st Person
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/E27esEBTplI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/E27esEBTplI
 
 ### Trackmania 2020 Self-Driving - Night - 3rd Person
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/q7tpanRJJZ4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/q7tpanRJJZ4
 
 
 ## Intermediate Map
@@ -175,7 +175,7 @@ I also ran the car on a modified version of one of the training tracks with less
 ![Intermediate Less Curve](docs/imgs/intermediate_less_curve_day.png)
 
 ### Trackmania 2020 Self-Driving - Intermediate - Day - 1st Person
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0y7iXZR67Qo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/0y7iXZR67Qo
 
 Overall, I was happy with the performance, and it leaves room for improvement.
 
