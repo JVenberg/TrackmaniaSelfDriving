@@ -31,7 +31,7 @@ of lighting. Here are a few examples of the tracks that I recorded on:
 ![Intermediate - Sunrise](docs/imgs/intermediate_sunrise.png)
 ![Intermediate - Night](docs/imgs/intermediate_night.png)
 
-In order to get the data from the [OpenPlanet script](Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/recorder.py)
+In order to get the data from the [OpenPlanet script](Plugin_TrackManiaCustomAPI.as) to the Python [recorder.py](recorder.py)
 script, I used network sockets to communicate the telemetry data from the car to the recorder.
 I also used d3dshot to get fast screenshots of the game view. I choose a fixed angle car view that
 did not include any of the car in it to minimize any effect that the car's pose and camera angle might have
@@ -44,7 +44,7 @@ to disk. This allowed me to implement keybinds to revert data when I would crash
 to walls, take bad corners, pause the game, etc. to avoid recording bad data or the pause screen.
 
 In total I recorded ~70,000 data points over ~2 hours of driving to construct my dataset.
-I then [preprocessed that data](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/process_data.py)
+I then [preprocessed that data](process_data.py)
 by flipping the image and steering angles to ensure that there would not be any bias in one direction
 which doubled the data points to ~140,000. I then split that data 85%-15% into a training and test dataset.
 I also resized each image to be 64x64 to reduce the size of the model and improve runtime performance,
@@ -57,7 +57,7 @@ Here is an example of what the data looks like after processing:
 
 # Model
 
-[The model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/model.py) I used was based on an Nvidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
+[The model](model.py) I used was based on an Nvidia paper titled [End to End Learning for Self-Driving Cars](https://arxiv.org/pdf/1604.07316.pdf).
 In that paper, they train a self-driving car on real world data. I thought that the model architecture would
 be a good starting point for my model. The model is a regression model consisting
 of 5 convolutional layers and 5 densely connected layers with one steering output.
@@ -104,12 +104,12 @@ the recording, put the car in an unideal situation, then resume recording the co
 For this project, I also wanted to explore automated hyperparameter tuning. Using PyTorch resources online,
 I found that RayTune allowed me to automate the parameter sweep process while also parallelizing the
 training using fractional GPUs and also early termination of poorly performing trials. I implemented
-[a tuning script](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/tune.py) that sweeps over a configuration space. I optimized over 4 parameters: learning rate, batch size, decay, drop out percent. I also integrated the reporting with [wandb.ai](wandb.ai) to visualize the trials and results in an interactive way. Here is an example of one of my parameter sweeps:
+[a tuning script](tune.py) that sweeps over a configuration space. I optimized over 4 parameters: learning rate, batch size, decay, drop out percent. I also integrated the reporting with [wandb.ai](wandb.ai) to visualize the trials and results in an interactive way. Here is an example of one of my parameter sweeps:
 
 ### [Interactive WandB Report](https://wandb.ai/jackvenberg/raytune-trackmania-hyperparameter-tuning/reports/TrackmaniaNet-HyperParameter-Tuning--Vmlldzo3NjMyMzg)
 
 
-After finding optimized hyperparameters, [I trained the model](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/train.py) over 15 epochs.
+After finding optimized hyperparameters, [I trained the model](train.py) over 15 epochs.
 
 ![Training](docs/imgs/training.png)
 
@@ -126,7 +126,7 @@ were within 0.10 of the expected value. Testing the tuned model on the test data
 As explained earlier, the accuracy probably isn't great due to
 the large amount of noisy, bad data. However, the accuracy is only one part of the picture. The real question is how does it perform when used to control the car...
 
-The results of [using the model to control the car](https://github.com/JVenberg/TrackmaniaSelfDriving/blob/main/inference.py) were impressive, but not perfect. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day. It was also very fast, only taking 2-5 ms to go from
+The results of [using the model to control the car](inference.py) were impressive, but not perfect. Even after adding more data to recover from bad situations, it would often get stuck on maps with hard turns. However, it performed surprisingly well on maps with more gradual turns, and it was able to generalize well to different times of day. It was also very fast, only taking 2-5 ms to go from
 image to prediction, which allowed the car to respond quickly to different situations.
 
 Here is an example of it running well on a greatly simplified map that was _not_ included in the training or test data (3rd person perspective was a replay for reference; it only inferenced on the 1st person perspective):
